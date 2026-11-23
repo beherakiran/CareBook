@@ -1,19 +1,36 @@
 import express from "express";
-const app = express();
+import bodyParser from "body-parser";
+import cors from "cors"
 
 import dotenv from "dotenv";
 dotenv.config();
 
+const server = express();
+const PORT = process.env.PORT ;
+
+server.use(express.json());
+server.use(express.urlencoded({ extended: true }));
+
+server.use(bodyParser.json());
+server.use(cors());
+
 import connectDb from "./src/config/db.js";
 
-const PORT = process.env.PORT ;
+import userRoutes from "./src/routes/website/user.routes.js";
 
 await connectDb();
 
-app.get("/",(req,res)=>{
+server.get("/",(req,res)=>{
     res.send("Welcome to CareBook")
 })
 
-app.listen(PORT,()=>{
+//admin
+
+//website
+userRoutes(server)
+
+server.listen(PORT,()=>{
   console.log(`server is running on port ${PORT}`);
 })
+
+

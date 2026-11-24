@@ -60,9 +60,7 @@ export const register = async (request, response) => {
   }
 };
 
-
 //login
-
 
 export const login = async (request, response) => {
 
@@ -98,6 +96,7 @@ export const login = async (request, response) => {
             return response.send(data);
         }
         const secretKey = process.env.secret_key;
+        
         var token = await jwt.sign(
             {
                 userId: checkUser._id,
@@ -126,4 +125,101 @@ export const login = async (request, response) => {
         return response.status(500).send(data);
     }
 };
+
+//view
+
+export const viewProfile = async (request, response) => {
+  try {
+    const userData = await UserModel.findOne({
+      _id: request.userId,
+      role_type: "user",
+    }).select("-password");
+
+    if (!userData) {
+      const data = {
+        _status: false,
+        _message: "Account doesn't exist.",
+        _data: "",
+      };
+
+      return response.send(data);
+    }
+
+    const data = {
+      _status: true,
+      _message: "Record found.",
+      _data: userData,
+    };
+
+    return response.send(data);
+  } catch (error) {
+    const data = {
+      _status: false,
+      _message: "Something wrong with the server.",
+      _error: error.message,
+      _data: null,
+    };
+
+    return response.send(data);
+  }
+};
+
+export const updateProfile = async(request, response) => {
+
+    try {
+        var userData = await UserModel.findOne({ _id : request.userId, role_type : 'user' });
+
+        if(!userData){
+            const data = {
+                _status : false,
+                _message : "Account doesn't exist.",
+                _data : ''
+            }
+
+            return response.send(data);
+        }
+
+        // Only these fields can be changed from profile
+        var body = request.body || {};
+
+        ['name', 'email', 'mobile_number', 'address', 'age', 'gender'].forEach((key) => {
+            if(body[key] !== undefined){
+                // Empty field is saved as null (enum / min / max validators allow null but not '')
+                userData[key] = body[key] === '' ? null : body[key];
+            }
+        });
+
+        userData.updated_at = Date.now();
+
+        // validateModifiedOnly : otherwise the unique email validator finds this same user and fails
+        await userData.save({ validateModifiedOnly : true });
+
+        var result = userData.toObject();
+        delete result.password;
+
+        const data = {
+            _status : true,
+            _message : "Profile updated succussfully.",
+            _data : result
+        }
+
+        return response.send(data);
+    } catch (error) {
+        var errorMessages = {};
+
+        for(var key in error.errors){
+            errorMessages[key] = error.errors[key].message
+        }
+
+        const data = {
+            _status : false,
+            _message : "Something went wrong.",
+            _error : errorMessages,
+            _data : ''
+        }
+
+        return response.send(data);
+    }
+}
+
 

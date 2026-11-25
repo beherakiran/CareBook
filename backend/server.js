@@ -17,6 +17,7 @@ server.use(cors());
 import connectDb from "./src/config/db.js";
 
 import userRoutes from "./src/routes/website/user.routes.js";
+import adminRoutes from "./src/routes/admin/admin.routes.js"
 
 await connectDb();
 
@@ -25,7 +26,7 @@ server.get("/",(req,res)=>{
 })
 
 //admin
-
+adminRoutes(server)
 //website
 userRoutes(server)
 

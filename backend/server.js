@@ -18,6 +18,7 @@ import connectDb from "./src/config/db.js";
 
 import userRoutes from "./src/routes/website/user.routes.js";
 import adminRoutes from "./src/routes/admin/admin.routes.js"
+import adminServiceRoutes from "./src/routes/admin/service.routes.js"
 
 await connectDb();
 
@@ -27,6 +28,8 @@ server.get("/",(req,res)=>{
 
 //admin
 adminRoutes(server)
+adminServiceRoutes(server)
+
 //website
 userRoutes(server)
 

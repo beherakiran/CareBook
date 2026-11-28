@@ -19,6 +19,7 @@ import connectDb from "./src/config/db.js";
 import userRoutes from "./src/routes/website/user.routes.js";
 import adminRoutes from "./src/routes/admin/admin.routes.js"
 import adminServiceRoutes from "./src/routes/admin/service.routes.js"
+import userServiceRoutes from  "./src/routes/website/service.routes.js"
 
 await connectDb();
 
@@ -32,6 +33,7 @@ adminServiceRoutes(server)
 
 //website
 userRoutes(server)
+userServiceRoutes(server)
 
 server.listen(PORT,()=>{
   console.log(`server is running on port ${PORT}`);
